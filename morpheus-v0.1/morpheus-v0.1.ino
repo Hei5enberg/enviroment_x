@@ -37,8 +37,6 @@ bool modeState;
 long echoDuration;
 int echoDistance;
 
-
-
 void setup() {
 	// Start serial
 	Serial.begin(115200);
@@ -57,6 +55,12 @@ void setup() {
 	pinMode(leftEcho, INPUT);
 	pinMode(trigPin, OUTPUT);
 
+	// espTone setup
+	ledcSetup(channel, freq, resolution);
+	ledcAttachPin(piezoPin, channel);
+
+	// GY521 
+
 	// Final message
 	u8g2.clearBuffer();
 	u8g2.setFont(u8g2_font_9x18B_tf);
@@ -74,27 +78,71 @@ void setup() {
 }
 
 void loop() {
-    
+	// If the mode switch is HIGH go into BIT
+	if (digitalRead(modeSwitch) == HIGH) {
+		buildInTest();
+		delay(10);
+		return;
+	}
+
+	// Main code goes here
 }
 
 void buildInTest() {
 	int frontDistance = getDistance(frontEcho);
 	int rightDistance = getDistance(rightEcho);
-	int backDistance = getDistance(backEcho);
-	int leftDistance = getDistance(leftEcho);
+	int backDistance  = getDistance(backEcho);
+	int leftDistance  = getDistance(leftEcho);
 
 	int frontPirState = digitalRead(frontPir);
 	int rightPirState = digitalRead(rightPir); 
-	int backPirState = digitalRead(backPir);
-	int leftPirState = digitalRead(leftPir);
+	int backPirState  = digitalRead(backPir);
+	int leftPirState  = digitalRead(leftPir);
 
 	u8g2.clearBuffer();
-	u8g2.drawStr()
+	u8g2.setFont(u8g2_font_5x8_tf);
+	u8g2.drawStr(10, 10, "Build In Test");
+	u8g2.drawLine(0, 10, 127, 10);
+	u8g2.drawStr(10, 20, "The quick brown fox jumps over the lazy dog");
+
+	u8g2.setCursor(10, 28);
+	u8g2.print("Front: ");
+	u8g2.print(frontDistance);
+	u8g2.print("cm");
+
+	u8g2.setCursor(10, 37);
+	u8g2.print("Right: ");
+	u8g2.print(rightDistance);
+	u8g2.print("cm");
+
+	u8g2.setCursor(10, 46);
+	u8g2.print("Back : ");
+	u8g2.print(backDistance);
+	u8g2.print("cm");
+
+	u8g2.setCursor(10, 55);
+	u8g2.print("Left : ");
+	u8g2.print(leftDistance);
+	u8g2.print("cm");
+
+	u8g2.drawLine(42, 36, 42, 55);
+
+	u8g2.drawStr(43, 28, frontPirState);
+	u8g2.drawStr(43, 37, rightPirState);
+	u8g2.drawStr(43, 46, backPirState);
+	u8g2.drawStr(43, 55, leftPirState);
+
+	// Code to write GY521 info here
+
+	u8g2.setFont(u8g2_font_4x6_tf);
+	u8g2.drawStr(10, 58, "Read readme.md for explanation of BIT");
+
+	u8g2.sendBuffer();
 }
 
-// Function to replace tone()
+// Function to replace tone() for arduino
 void espTone(int freq, int duration) {
-	ledcWriteTone(channel, freq)
+	ledcWriteTone(channel, freq);
 	ledcWrite(channel, 255);
 	delay(duration);
 	ledcWrite(channel, 0);
@@ -113,7 +161,3 @@ void getDistance(int pin) {
 	if (distance > 350 || distance < 0) { return -1; }
 	return distance;
 }
-
-// void checkMovement(int pin) {
-// 	bool pirState = digitalRead()
-// }
