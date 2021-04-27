@@ -5,17 +5,17 @@
 #include <GY521.h>
 
 // HC-SR501 pin's
-#define frontPir;
-#define rightPir;
-#define backPir;
-#define leftPir;
+#define frontPir -1
+#define rightPir -1
+#define backPir  -1
+#define leftPir  -1
 
 // HC-SR04 pin's
-#define trigPin;
-#define frontEcho;
-#define rightEcho;
-#define backEcho;
-#define leftEcho;
+#define trigPin -1
+#define frontEcho -1
+#define rightEcho -1
+#define backEcho -1
+#define leftEcho -1
 
 // U8g2 pin's
 U8G2_ST7920_128X64_F_SW_SPI u8g2(U8G2_R0, /* clock=*/ 13, /* data=*/ 11, /* CS=*/ 10, /* reset=*/ 8);
@@ -24,8 +24,8 @@ U8G2_ST7920_128X64_F_SW_SPI u8g2(U8G2_R0, /* clock=*/ 13, /* data=*/ 11, /* CS=*
 GY521 gyro(0x68);
 
 // Other pin's
-#define modeSwitch;
-#define piezoPin;
+#define modeSwitch -1
+#define piezoPin -1
 
 // Variables espTone()
 int freq = 2000;
@@ -89,10 +89,10 @@ void loop() {
 }
 
 void buildInTest() {
-	int frontDistance = getDistance(frontEcho);
-	int rightDistance = getDistance(rightEcho);
-	int backDistance  = getDistance(backEcho);
-	int leftDistance  = getDistance(leftEcho);
+	const int frontDistance = getDistance(frontEcho);
+	const int rightDistance = getDistance(rightEcho);
+	const int backDistance  = getDistance(backEcho);
+	const int leftDistance  = getDistance(leftEcho);
 
 	int frontPirState = digitalRead(frontPir);
 	int rightPirState = digitalRead(rightPir); 
@@ -127,10 +127,14 @@ void buildInTest() {
 
 	u8g2.drawLine(42, 36, 42, 55);
 
-	u8g2.drawStr(43, 28, frontPirState);
-	u8g2.drawStr(43, 37, rightPirState);
-	u8g2.drawStr(43, 46, backPirState);
-	u8g2.drawStr(43, 55, leftPirState);
+	u8g2.setCursor(43, 28);
+	u8g2.print(frontPirState);
+	u8g2.setCursor(43, 37);
+	u8g2.print(rightPirState);
+	u8g2.setCursor(43, 46);
+	u8g2.print(backPirState);
+	u8g2.setCursor(43, 55);
+	u8g2.print(leftPirState);
 
 	// Code to write GY521 info here
 
@@ -148,7 +152,7 @@ void espTone(int freq, int duration) {
 	ledcWrite(channel, 0);
 }
 
-void getDistance(int pin) {
+int getDistance(int pin) {
 	digitalWrite(trigPin, LOW);
 	delayMicroseconds(2);
 	digitalWrite(trigPin, HIGH);
