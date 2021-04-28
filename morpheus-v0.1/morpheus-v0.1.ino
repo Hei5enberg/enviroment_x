@@ -18,13 +18,13 @@
 #define leftEcho -1
 
 // U8g2 pin's
-U8G2_ST7920_128X64_F_SW_SPI u8g2(U8G2_R0, /* clock=*/ 13, /* data=*/ 11, /* CS=*/ 10, /* reset=*/ 8);
+U8G2_ST7920_128X64_F_SW_SPI u8g2(U8G2_R0, /* clock=*/ 18, /* data=*/ 23, /* CS=*/ 5, /* reset=*/ 22);
 
 // GY521 pin
 GY521 gyro(0x68);
 
 // Other pin's
-#define modeSwitch -1
+#define modeSwitch 13
 #define piezoPin -1
 
 // Variables espTone()
@@ -34,8 +34,8 @@ int resolution = 8;
 
 // Variables
 bool modeState;
-long echoDuration;
-int echoDistance;
+//long echoDuration;
+//int echoDistance;
 
 void setup() {
 	// Start serial
@@ -64,11 +64,11 @@ void setup() {
 	// Final message
 	u8g2.clearBuffer();
 	u8g2.setFont(u8g2_font_9x18B_tf);
-	u8g2.drawStr(10, 33, "Enviroment X");
+	u8g2.drawStr(10, 20, "Enviroment X");
 	u8g2.setFont(u8g2_font_5x8_tf);
-	u8g2.drawStr(10, 42, "created by");
-	u8g2.drawStr(10, 51, "Gijs Vis (Hei5enberg)");
-	u8g2.drawStr(10, 60, "Taco Kraima");
+	u8g2.drawStr(10, 29, "created by");
+	u8g2.drawStr(10, 38, "Gijs Vis (Hei5enberg)");
+	u8g2.drawStr(10, 47, "Taco Kraima");
 	u8g2.sendBuffer();
 
 	espTone(2000, 200);
@@ -85,14 +85,25 @@ void loop() {
 		return;
 	}
 
+	u8g2.clearBuffer();
+	u8g2.setFont(u8g2_font_9x18B_tf);
+	u8g2.drawStr(14, 33, "PLACEHOLDER");
+	u8g2.sendBuffer();
+	delay(10);
 	// Main code goes here
 }
 
 void buildInTest() {
-	const int frontDistance = getDistance(frontEcho);
-	const int rightDistance = getDistance(rightEcho);
-	const int backDistance  = getDistance(backEcho);
-	const int leftDistance  = getDistance(leftEcho);
+	// const int frontDistance = getDistance(frontEcho);
+	// const int rightDistance = getDistance(rightEcho);
+	// const int backDistance  = getDistance(backEcho);
+	// const int leftDistance  = getDistance(leftEcho);
+
+	int frontDistance = 0;
+	int rightDistance = 0;
+	int backDistance  = 0;
+	int leftDistance  = 0;
+
 
 	int frontPirState = digitalRead(frontPir);
 	int rightPirState = digitalRead(rightPir); 
@@ -101,45 +112,47 @@ void buildInTest() {
 
 	u8g2.clearBuffer();
 	u8g2.setFont(u8g2_font_5x8_tf);
-	u8g2.drawStr(10, 10, "Build In Test");
-	u8g2.drawLine(0, 10, 127, 10);
-	u8g2.drawStr(10, 20, "The quick brown fox jumps over the lazy dog");
+	u8g2.drawStr(31, 8, "Build In Test");
+	u8g2.drawLine(0, 9, 127, 9);
+	// u8g2.setFont(u8g2_font_4x6_tf);
+	// u8g2.drawStr(1, 16, "The quick brown fox jumps over the lazy dog");
+	// u8g2.setFont(u8g2_font_5x8_tf);
 
-	u8g2.setCursor(10, 28);
+	u8g2.setCursor(10, 18);
 	u8g2.print("Front: ");
 	u8g2.print(frontDistance);
 	u8g2.print("cm");
 
-	u8g2.setCursor(10, 37);
+	u8g2.setCursor(10, 27);
 	u8g2.print("Right: ");
 	u8g2.print(rightDistance);
 	u8g2.print("cm");
 
-	u8g2.setCursor(10, 46);
+	u8g2.setCursor(10, 36);
 	u8g2.print("Back : ");
 	u8g2.print(backDistance);
 	u8g2.print("cm");
 
-	u8g2.setCursor(10, 55);
+	u8g2.setCursor(10, 45);
 	u8g2.print("Left : ");
 	u8g2.print(leftDistance);
 	u8g2.print("cm");
 
-	u8g2.drawLine(42, 36, 42, 55);
+	u8g2.drawLine(72, 12, 72, 45);
 
-	u8g2.setCursor(43, 28);
+	u8g2.setCursor(74, 18);
 	u8g2.print(frontPirState);
-	u8g2.setCursor(43, 37);
+	u8g2.setCursor(74, 27);
 	u8g2.print(rightPirState);
-	u8g2.setCursor(43, 46);
+	u8g2.setCursor(74, 36);
 	u8g2.print(backPirState);
-	u8g2.setCursor(43, 55);
+	u8g2.setCursor(74, 45);
 	u8g2.print(leftPirState);
 
 	// Code to write GY521 info here
 
 	u8g2.setFont(u8g2_font_4x6_tf);
-	u8g2.drawStr(10, 58, "Read readme.md for explanation of BIT");
+	u8g2.drawStr(5, 63, "Read readme.md for explanation");
 
 	u8g2.sendBuffer();
 }
@@ -159,8 +172,9 @@ int getDistance(int pin) {
 	delayMicroseconds(10);
 	digitalWrite(trigPin, LOW);
 
-	duration = pulseIn(pin, HIGH);
-	distance = duration * 0.034 / 2;
+	long duration = pulseIn(pin, HIGH);
+	int distance = duration * 0.034 / 2;
+	distance = 1;
 
 	if (distance > 350 || distance < 0) { return -1; }
 	return distance;
